@@ -1631,18 +1631,18 @@ stand_inventory_age_distribution_plot
 age_summary <- stand_inventory_age %>%
   mutate(
     age_class = case_when(
-      inventory_age < 5  ~ "0–<5 years",
-      inventory_age < 10 ~ "5–<10 years",
-      inventory_age < 15 ~ "10–<15 years",
-      TRUE               ~ "15+ years"
+      inventory_age < 5  ~ "0–4",
+      inventory_age < 10 ~ "5–9",
+      inventory_age < 15 ~ "10–14",
+      TRUE               ~ "≥15"
     ),
     age_class = factor(
       age_class,
       levels = c(
-        "0–<5 years",
-        "5–<10 years",
-        "10–<15 years",
-        "15+ years"
+        "0–4",
+        "5–9",
+        "10–14",
+        "≥15"
       )
     )
   ) %>%
@@ -1672,7 +1672,7 @@ stand_inventory_age_class_plot <- ggplot(
   labs(
     #title = "Distribution of Stand Inventory Age",
     #subtitle = "Based on the most recent inventory record associated with each stand",
-    x = "Years since most recent inventory",
+    x = "Age of most recent MiFI inventory (years)",
     y = "Percent of inventoried WLD stands"
   ) +
   theme_grass()

@@ -874,9 +874,15 @@ p_department_total_acres <- ggplot(
   ) +
   labs(
     x = "Year",
-    y = "Cumulative inventoried Department acres\n(in MiFI)"
+    y = "Inventoried acres in MiFI"
   ) +
-  theme_grass()
+  theme_grass() +
+  theme(
+    axis.text.x = element_text(
+      angle = 45,
+      hjust = 1
+    )
+  )
 
 # Print plot.
 p_department_total_acres
@@ -1129,9 +1135,15 @@ p_total_acres <- ggplot(
   ) +
   labs(
     x = "Year",
-    y = "Cumulative inventoried WLD acres\n(in MiFI)"
+    y = "Inventoried WLD acres in MiFI"
   ) +
-  theme_grass()
+  theme_grass() +
+  theme(
+    axis.text.x = element_text(
+      angle = 45,
+      hjust = 1
+    )
+  )
 
 # Print plot.
 p_total_acres
@@ -1643,14 +1655,15 @@ project_cover_through_time_plot <- ggplot(
   ) +
   labs(
     x = "Year",
-    y = "Percent of cumulative WLD inventory\n(terrestrial WLD acres in MiFI)"
+    y = "Percent of inventoried WLD terrestrial\nacres in each cover class"
   ) +
   theme_grass() +
   theme(
     legend.position = "none",
     
     strip.text = element_text(
-      face = "bold"
+      face = "bold",
+      size = 14
     ),
     
     axis.text.x = element_text(
@@ -2209,10 +2222,10 @@ management_area_plot <- ggplot(
     labeller = as_labeller(
       c(
         "Agriculture" =
-          "Top-15 management areas by\nAgriculture acres",
+          "Top management areas by\nAgriculture acres",
         
         "Herbaceous Openland" =
-          "Top-15 management areas by\nHerbaceous Openland acres"
+          "Top management areas by\nHerbaceous Openland acres"
       )
     )
   ) +
@@ -2228,15 +2241,15 @@ management_area_plot <- ggplot(
     expand = expansion(mult = c(0, 0.15))
   ) +
   labs(
-    x = "Inventoried WLD acres\n(in MiFI)",
+    x = "Inventoried WLD acres in each cover class",
     y = NULL
   ) +
   theme_grass() +
   theme(
     legend.position = "none",
-    
     strip.text = element_text(
-      face = "bold"
+      face = "bold",
+      size = 14
     )
   )
 
@@ -2347,20 +2360,53 @@ top_management_area_proportion <- management_area_proportion_summary %>%
 # Print summary.
 top_management_area_proportion
 
-# Build plot.
+###############################################################################
+# Prepare Plotting Data
+###############################################################################
+
+top_management_area_proportion_plot <- top_management_area_proportion %>%
+  mutate(
+    
+    # Wrap long management-area labels so they fit more cleanly in the figure.
+    # A few especially long labels are handled manually for better line breaks.
+    unit_key_wrapped = case_when(
+      
+      unit_key == "Fraser Twp. No.2 (Kitchen Rd.) SGA" ~
+        "Fraser Twp. No.2\n(Kitchen Rd.) SGA",
+      
+      unit_key == "Pinconning Twp. (Cody-Esty Rd.) SGA" ~
+        "Pinconning Twp.\n(Cody-Esty Rd.) SGA",
+      
+      unit_key == "Gale Road Grand River SGA" ~
+        "Gale Road\nGrand River SGA",
+      
+      TRUE ~ stringr::str_wrap(
+        unit_key,
+        width = 24
+      )
+    )
+  )
+
+
+###############################################################################
+# Build Plot
+###############################################################################
+
 management_area_proportion_plot <- ggplot(
-  top_management_area_proportion,
+  top_management_area_proportion_plot,
   aes(
     x = percent_unit_acres,
     y = tidytext::reorder_within(
-      unit_key,
+      unit_key_wrapped,
       percent_unit_acres,
       project_cover_class
     ),
     fill = project_cover_class
   )
 ) +
+  
   geom_col() +
+  
   geom_text(
     aes(
       label = paste0(
@@ -2371,40 +2417,70 @@ management_area_proportion_plot <- ggplot(
     hjust = -0.1,
     size = 3.2
   ) +
+  
   facet_wrap(
     ~project_cover_class,
     scales = "free_y",
     labeller = as_labeller(
       c(
         "Agriculture" =
-          "Top-15 management areas by\npercent of inventoried acres in\nAgriculture",
+          "Top management areas by\npercent of inventoried acres in\nAgriculture",
         
         "Herbaceous Openland" =
-          "Top-15 management areas by\npercent of inventoried acres in\nHerbaceous Openland"
+          "Top management areas by\npercent of inventoried acres in\nHerbaceous Openland"
       )
     )
   ) +
+  
   tidytext::scale_y_reordered() +
+  
   scale_fill_manual(
     values = c(
       "Agriculture" = ag_color,
       "Herbaceous Openland" = herb_color
     )
   ) +
+  
   scale_x_continuous(
-    labels = percent_format(scale = 1),
-    expand = expansion(mult = c(0, 0.18))
+    labels = percent_format(
+      scale = 1
+    ),
+    expand = expansion(
+      mult = c(
+        0,
+        0.18
+      )
+    )
   ) +
+  
   labs(
-    x = "Percent of each management area's\ninventoried WLD acres (in MiFI)",
+    x = "Percent of each management area's inventoried acres",
     y = NULL
   ) +
+  
   theme_grass() +
+  
   theme(
-    legend.position = "none"
+    legend.position = "none",
+    
+    # Match facet-heading size used in other report figures.
+    strip.text = element_text(
+      face = "bold",
+      size = 14,
+      lineheight = 1.0
+    ),
+    
+    # Slightly reduce y-axis text so wrapped labels stay compact.
+    axis.text.y = element_text(
+      size = 9
+    )
   )
 
-# Print plot.
+
+###############################################################################
+# Print Plot
+###############################################################################
+
 management_area_proportion_plot
 
 
@@ -2544,7 +2620,7 @@ management_area_top10_report_table <- management_area_full_summary %>%
   )
 
 # Print report-ready top-15 table.
-management_area_top15_report_table
+management_area_top10_report_table
 
 
 ###############################################################################
@@ -2702,8 +2778,8 @@ acre_concentration_bar_plot <- ggplot(
     expand = expansion(mult = c(0, 0.05))
   ) +
   labs(
-    x = "WLD management areas with\nthe most cover class acres",
-    y = "Percent of total inventoried\nWLD cover class acres (in MiFI)"
+    x = "Number of management areas with\nthe greatest inventoried acreage",
+    y = "Percent of total inventoried WLD\nacreage in each cover class"
   ) +
   theme_grass() +
   theme(
@@ -3307,7 +3383,367 @@ mdnr_authority_plot
 
 
 ###############################################################################
-# 💾 32. Export Summary Table, Appendix Table, RDS Objects, and Figures
+# 📌 32. Acreage-Based Management Area Screening Using Jenks Natural Breaks
+###############################################################################
+# ⭐ Question this helps answer:
+# Where are Agriculture, Herbaceous Openland, and combined Agriculture +
+# Herbaceous Openland acres most concentrated across WLD management areas?
+
+# This analysis groups WLD management areas using Jenks natural breaks based on
+# inventoried acres only.
+#
+# Acres are used because this screen is intended to support later discussions
+# about management effort, cost, and potential acreage-reduction scenarios.
+# Percent of management-area terrestrial acres is retained for context, but it
+# is not used to assign screening groups in this section.
+#
+# Jenks natural breaks are calculated separately for three acreage metrics:
+#
+#   • Agriculture + Herbaceous Openland acres
+#   • Agriculture acres
+#   • Herbaceous Openland acres
+#
+# Management areas are grouped into three natural-break classes:
+#
+#   • Low
+#   • Medium
+#   • High
+#
+# The High group identifies management areas with the largest acreage footprint
+# for each metric relative to other WLD management areas.
+#
+# This is an applied screening tool for later review. It does not identify
+# reduction targets or imply that high acreage is undesirable.
+
+
+###############################################################################
+# 📦 32A. Load Natural-Breaks Package
+###############################################################################
+
+library(classInt)
+
+
+###############################################################################
+# 📌 32B. Set Natural-Break Parameters
+###############################################################################
+
+jenks_classes <- 4
+
+jenks_labels <- c(
+  "Low",
+  "Medium",
+  "High",
+  "Very High"
+)
+
+
+###############################################################################
+# 📌 32C. Prepare Long Management-Area Acreage Screening Table
+###############################################################################
+
+management_area_acreage_screening_long <- management_area_full_summary %>%
+  select(
+    management_area = unit_key,
+    total_terrestrial_acres,
+    agriculture_and_herbaceous_openland_acres,
+    agriculture_and_herbaceous_openland_percent_terrestrial_acres,
+    agriculture_acres,
+    agriculture_percent_terrestrial_acres,
+    herbaceous_openland_acres,
+    herbaceous_openland_percent_terrestrial_acres
+  ) %>%
+  pivot_longer(
+    cols = c(
+      agriculture_and_herbaceous_openland_acres,
+      agriculture_acres,
+      herbaceous_openland_acres
+    ),
+    names_to = "metric_raw",
+    values_to = "cover_class_acres"
+  ) %>%
+  mutate(
+    metric = case_when(
+      metric_raw == "agriculture_and_herbaceous_openland_acres" ~
+        "Agriculture + Herbaceous Openland",
+      
+      metric_raw == "agriculture_acres" ~
+        "Agriculture",
+      
+      metric_raw == "herbaceous_openland_acres" ~
+        "Herbaceous Openland",
+      
+      TRUE ~ metric_raw
+    ),
+    
+    percent_terrestrial_acres = case_when(
+      metric == "Agriculture + Herbaceous Openland" ~
+        agriculture_and_herbaceous_openland_percent_terrestrial_acres,
+      
+      metric == "Agriculture" ~
+        agriculture_percent_terrestrial_acres,
+      
+      metric == "Herbaceous Openland" ~
+        herbaceous_openland_percent_terrestrial_acres,
+      
+      TRUE ~ NA_real_
+    )
+  ) %>%
+  select(
+    metric,
+    management_area,
+    cover_class_acres,
+    percent_terrestrial_acres,
+    total_terrestrial_acres
+  ) %>%
+  arrange(
+    metric,
+    desc(cover_class_acres)
+  )
+
+# Print long screening table.
+management_area_acreage_screening_long
+
+
+###############################################################################
+# 📌 32D. Helper Function for Jenks Acreage Groups
+###############################################################################
+# ⭐ Why this matters:
+# This safely applies Jenks natural breaks within each metric.
+
+add_jenks_acreage_group <- function(data, value_column, jenks_classes, jenks_labels) {
+  
+  value_vector <- data[[value_column]]
+  
+  unique_values <- length(
+    unique(
+      value_vector[!is.na(value_vector)]
+    )
+  )
+  
+  classes_to_use <- min(
+    jenks_classes,
+    unique_values
+  )
+  
+  if (classes_to_use <= 1) {
+    
+    data$acreage_group <- jenks_labels[1]
+    data$acreage_group_number <- 1
+    data$acreage_group_lower <- min(value_vector, na.rm = TRUE)
+    data$acreage_group_upper <- max(value_vector, na.rm = TRUE)
+    
+    return(data)
+  }
+  
+  jenks_breaks <- classInt::classIntervals(
+    value_vector,
+    n = classes_to_use,
+    style = "jenks"
+  )$brks
+  
+  jenks_breaks <- unique(jenks_breaks)
+  
+  if (length(jenks_breaks) <= 2) {
+    
+    data$acreage_group <- jenks_labels[1]
+    data$acreage_group_number <- 1
+    data$acreage_group_lower <- min(value_vector, na.rm = TRUE)
+    data$acreage_group_upper <- max(value_vector, na.rm = TRUE)
+    
+    return(data)
+  }
+  
+  group_labels <- jenks_labels[
+    seq_len(
+      length(jenks_breaks) - 1
+    )
+  ]
+  
+  group_values <- cut(
+    value_vector,
+    breaks = jenks_breaks,
+    labels = group_labels,
+    include.lowest = TRUE
+  )
+  
+  group_numbers <- as.integer(group_values)
+  
+  data$acreage_group <- as.character(group_values)
+  data$acreage_group_number <- group_numbers
+  data$acreage_group_lower <- jenks_breaks[group_numbers]
+  data$acreage_group_upper <- jenks_breaks[group_numbers + 1]
+  
+  data
+}
+
+
+###############################################################################
+# 📌 32E. Assign Jenks Acreage Groups
+###############################################################################
+
+management_area_acreage_screening_groups <- management_area_acreage_screening_long %>%
+  group_by(
+    metric
+  ) %>%
+  group_modify(
+    ~ add_jenks_acreage_group(
+      data = .x,
+      value_column = "cover_class_acres",
+      jenks_classes = jenks_classes,
+      jenks_labels = jenks_labels
+    )
+  ) %>%
+  ungroup() %>%
+  mutate(
+    acreage_group = factor(
+      acreage_group,
+      levels = jenks_labels
+    )
+  ) %>%
+  arrange(
+    metric,
+    desc(acreage_group_number),
+    desc(cover_class_acres)
+  )
+
+# Print full acreage screening table.
+management_area_acreage_screening_groups
+
+
+###############################################################################
+# 📌 32F. Create Acreage Group Summary
+###############################################################################
+
+management_area_acreage_group_summary <- management_area_acreage_screening_groups %>%
+  group_by(
+    metric,
+    acreage_group,
+    acreage_group_number
+  ) %>%
+  summarise(
+    management_areas = n(),
+    
+    min_cover_class_acres =
+      min(cover_class_acres, na.rm = TRUE),
+    
+    max_cover_class_acres =
+      max(cover_class_acres, na.rm = TRUE),
+    
+    total_cover_class_acres =
+      sum(cover_class_acres, na.rm = TRUE),
+    
+    min_percent_terrestrial_acres =
+      min(percent_terrestrial_acres, na.rm = TRUE),
+    
+    max_percent_terrestrial_acres =
+      max(percent_terrestrial_acres, na.rm = TRUE),
+    
+    .groups = "drop"
+  ) %>%
+  arrange(
+    metric,
+    acreage_group_number
+  )
+
+# Print acreage group summary.
+management_area_acreage_group_summary
+
+
+###############################################################################
+# 📌 32G. Create Results Table for High and Very High Acreage Groups
+###############################################################################
+# ⭐ Why this matters:
+# This creates a focused results table showing the management areas in the High
+# and Very High acreage groups for each of the three metrics.
+
+management_area_high_acreage_results <- management_area_acreage_screening_groups %>%
+  filter(
+    acreage_group %in% c(
+      "High",
+      "Very High"
+    )
+  ) %>%
+  arrange(
+    metric,
+    desc(acreage_group_number),
+    desc(cover_class_acres)
+  ) %>%
+  mutate(
+    cover_class_acres =
+      round(cover_class_acres, 0),
+    
+    percent_terrestrial_acres =
+      round(percent_terrestrial_acres, 1),
+    
+    total_terrestrial_acres =
+      round(total_terrestrial_acres, 0),
+    
+    acreage_group_lower =
+      round(acreage_group_lower, 0),
+    
+    acreage_group_upper =
+      round(acreage_group_upper, 0)
+  ) %>%
+  select(
+    metric,
+    acreage_group,
+    management_area,
+    cover_class_acres,
+    percent_terrestrial_acres,
+    total_terrestrial_acres,
+    acreage_group_lower,
+    acreage_group_upper
+  )
+
+# Print High and Very High acreage results table.
+management_area_high_acreage_results
+
+
+###############################################################################
+# 📌 32H. Create Report-Ready Acreage Screening Table
+###############################################################################
+# ⭐ Why this matters:
+# This creates a cleaner table that can be used in the report or appendix.
+
+management_area_acreage_screening_report_table <- management_area_acreage_screening_groups %>%
+  mutate(
+    cover_class_acres =
+      round(cover_class_acres, 0),
+    
+    percent_terrestrial_acres =
+      round(percent_terrestrial_acres, 1),
+    
+    total_terrestrial_acres =
+      round(total_terrestrial_acres, 0),
+    
+    acreage_group_lower =
+      round(acreage_group_lower, 0),
+    
+    acreage_group_upper =
+      round(acreage_group_upper, 0)
+  ) %>%
+  arrange(
+    metric,
+    desc(acreage_group_number),
+    desc(cover_class_acres)
+  ) %>%
+  select(
+    metric,
+    acreage_group,
+    management_area,
+    cover_class_acres,
+    percent_terrestrial_acres,
+    total_terrestrial_acres,
+    acreage_group_lower,
+    acreage_group_upper
+  )
+
+# Print report-ready screening table.
+management_area_acreage_screening_report_table
+
+
+###############################################################################
+# 💾 33. Export Summary Table, Appendix Table, RDS Objects, and Figures
 ###############################################################################
 # ⭐ Why this matters:
 # This exports only the core report-ready summary table, appendix table, final
@@ -3359,6 +3795,15 @@ write_csv(
   file.path(output_dir, "management_area_top15_report_table.csv")
 )
 
+write_csv(
+  management_area_acreage_screening_report_table,
+  file.path(output_dir, "management_area_acreage_screening_report_table.csv")
+)
+
+write_csv(
+  management_area_high_acreage_results,
+  file.path(output_dir, "management_area_high_acreage_results.csv")
+)
 
 ###############################################################################
 # Export RDS objects.
@@ -3383,8 +3828,8 @@ saveRDS(
 ggsave(
   file.path(output_dir, "fig_department_total_acres.png"),
   p_department_total_acres,
-  width = figure_width,
-  height = figure_height,
+  width = 5,
+  height = 5,
   dpi = figure_dpi
 )
 
@@ -3392,8 +3837,8 @@ ggsave(
 ggsave(
   file.path(output_dir, "fig_total_acres.png"),
   p_total_acres,
-  width = figure_width,
-  height = figure_height,
+  width = 5,
+  height = 5,
   dpi = figure_dpi
 )
 
@@ -3419,16 +3864,16 @@ ggsave(
 ggsave(
   file.path(output_dir, "fig_management_area_acres.png"),
   management_area_plot,
-  width = 10.5,
-  height = 7.5,
+  width = 9.5,
+  height = 5,
   dpi = figure_dpi
 )
 
 ggsave(
   file.path(output_dir, "fig_management_area_proportion.png"),
   management_area_proportion_plot,
-  width = 8.5,
-  height = 7,
+  width = 9,
+  height = 5.5,
   dpi = figure_dpi
 )
 
