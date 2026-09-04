@@ -2,7 +2,9 @@
 
 ### [Steven M. Gurney](https://linktr.ee/stevenmgurney)
 
-### Data: Because MiFI records may change through time, the data snapshots used in this study were retained to preserve the exact inventory evaluated. These large datasets were archived internally within the Wildlife Division Planning and Adaptation Section repository. Current MiFI data are available internally to MDNR staff through the MiFI enterprise system on the MDNR GIS Portal, while public MiFI inventory data are available through the Michigan GIS Open Data Portal.
+### Manuscript: Michigan Department of Natural Resources – Wildlife Division, Planning and Adaptation Section. Wildlife Division Report No. 3753. Lansing, MI, USA.
+
+#### Data: Because MiFI records may change through time, the data snapshots used in this study were retained to preserve the exact inventory evaluated. These large datasets were archived internally within the Wildlife Division Planning and Adaptation Section repository. Current MiFI data are available internally to MDNR staff through the MiFI enterprise system on the MDNR GIS Portal, while public MiFI inventory data are available through the Michigan GIS Open Data Portal.
 
 #### Please contact the first author for questions about the code or data: Steven M. Gurney (gurneys5@michigan.gov)
 __________________________________________________________________________________________________________________________________________
@@ -14,17 +16,11 @@ ________________________________________________________________________________
 
 ## Repository Directory
 
-### OpenlandAssessment_Phase1Step1_DataPrep_18Aug2026.R - Code used to read and prepare MiFI data.
+### [VegCover_Step1_DataPrep_04Sep2026.R](./VegCover_Step1_DataPrep_04Sep2026.R) - Code used to read and prepare MiFI data.
 
-OpenlandAssessment_Phase1Step2_EDA_18Aug2026.R - Code used for exploratory data analysis (EDA) and data quality control (QC).
+### [VegCover_Step2_EDA_04Sep2026.R](./VegCover_Step2_EDA_04Sep2026.R) - Code used for exploratory data analysis (EDA) and data quality control (QC).
 
-OpenlandAssessment_Phase1Step3_Analysis_18Aug2026.R - Code used for analyses and creating visuals.
+### [VegCover_Step3_Analysis_04Sep2026.R](./VegCover_Step3_Analysis_04Sep2026.R) - Code used for inventory summaries, management-area scale analysis, and associated visuals.
 
+### [VegCover_Step4_UnitSummaries_04Sep2026.R](./VegCover_Step4_UnitSummaries_04Sep2026.R) - Code used for inventory summaries, administrative-unit scale analysis, and associated visuals.
 
-
-### [Code](./Code): Contains code for preparing study data and running study model.
-*  [Data_Prep](./Code/Data_Prep) - Folder with code to prepare study data for use in the N-mixture model.
-   * [Data_Processing.R](./Code/Data_Prep/Data_Processing.R) - Code to process wrangled data.
-   * [Data_Wrangling.R](./Code/Data_Prep/Data_Wrangling.R) - Code to wrangle study data.
-* [N_Mixture_Model_Supplement.R](./Code/N_Mixture_Model_Supplement.R) - Code to fit alternative model with year as a factor rather than linear effect
-* [N_Mixture_Model.R](./Code/N_Mixture_Model.R) - Code to fit N-
