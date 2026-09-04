@@ -1,6 +1,6 @@
-# Grassland_Inventory_Project
-
 # THIS PAGE IS UNDER CONSTRUCTION
+
+# Evaluating MiFI Vegetative Cover on MDNR-Administered Public Lands: A Wildlife Division Case Study
 
 OpenlandAssessment_Phase1Step1_DataPrep_18Aug2026.R - Code used to read and prepare MiFI data.
 
