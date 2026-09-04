@@ -1,6 +1,6 @@
 # Evaluating MiFI Vegetative Cover on MDNR-Administered Public Lands: A Wildlife Division Case Study
 
-### [Steven M. Gurney]
+### Author: Steven M. Gurney
 
 ### Manuscript: Michigan Department of Natural Resources – Wildlife Division, Planning and Adaptation Section. Wildlife Division Report No. 3753. Lansing, MI, USA.
 
