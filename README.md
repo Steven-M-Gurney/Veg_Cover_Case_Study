@@ -6,7 +6,7 @@
 
 #### Data: Because MiFI records may change through time, the data snapshots used in this study were retained to preserve the exact inventory evaluated. These large datasets were archived internally within the Wildlife Division Planning and Adaptation Section repository. Current MiFI data are available internally to MDNR staff through the MiFI enterprise system on the MDNR GIS Portal, while public MiFI inventory data are available through the Michigan GIS Open Data Portal.
 
-#### Please contact the first author for questions about the code or data: Steven M. Gurney (gurneys5@michigan.gov)
+#### Please contact the author for questions about the code or data: Steven M. Gurney (gurneys5@michigan.gov)
 __________________________________________________________________________________________________________________________________________
 
 ## Summary
